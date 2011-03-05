@@ -1,0 +1,17 @@
+vector_table:
+LFFE0: .word LFC26
+LFFE2: .word LFC26
+LFFE4: .word LFC26
+LFFE6: .word LFC26
+LFFE8: .word LFC26
+LFFEA: .word LFC26
+LFFEC: .word LFC26
+LFFEE: .word LFC26
+LFFF0: .word LFC26
+LFFF2: .word LFC26
+LFFF4: .word LFC26
+LFFF6: .word LFC26
+LFFF8: .word LFC26
+LFFFA: .word LFC26
+LFFFC: .word LFC26
+LFFFE: .word LFC00
