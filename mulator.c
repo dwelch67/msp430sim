@@ -1239,12 +1239,38 @@ if(SHOWDISS) printf("[%04X] jn true 0x%04X\n",pcop,joff);
                 }
                 case 5: //jge
                 {
-                    break;
+if(SHOWDISS) printf("[%04X] jge\n",pcop);
+                    ra=read_register(2);
+                    if(ra&NBIT) rc=1; else rc=0;
+                    if(ra&VBIT) ra=1; else ra=0;
+                    ra=ra^rc;
+                    if(ra==0)
+                    {
+                        joff=inst&0x3FF;
+                        joff<<=1;
+                        if(joff&0x400) joff|=0xF800;
+                        joff=(joff+pc)&0xFFFF;
+                        write_register(0,joff);
+if(SHOWDISS) printf("[%04X] jge true 0x%04X\n",pcop,joff);
+                    }
                     return(0);
                 }
                 case 6: //jl
                 {
-                    break;
+if(SHOWDISS) printf("[%04X] jl\n",pcop);
+                    ra=read_register(2);
+                    if(ra&NBIT) rc=1; else rc=0;
+                    if(ra&VBIT) ra=1; else ra=0;
+                    ra=ra^rc;
+                    if(ra==1)
+                    {
+                        joff=inst&0x3FF;
+                        joff<<=1;
+                        if(joff&0x400) joff|=0xF800;
+                        joff=(joff+pc)&0xFFFF;
+                        write_register(0,joff);
+if(SHOWDISS) printf("[%04X] jl true 0x%04X\n",pcop,joff);
+                    }
                     return(0);
                 }
                 case 7: //unconditional
