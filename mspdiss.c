@@ -363,6 +363,16 @@ unsigned int fetch ( unsigned int addr, unsigned char type )
 {
     unsigned int ra;
 
+//addr&=ROMADDMASK;
+
+if(addr>ROMADDMASK)
+{
+    printf("fetch(0x%X) too big\n",addr);
+    exit(1);
+}
+
+
+
     if(hitlist[addr]!=type)
     {
         if(hitlist[addr])
@@ -386,6 +396,13 @@ unsigned int read8 ( unsigned int addr )
 {
     unsigned int ra;
 
+
+if(addr>ROMADDMASK)
+{
+    printf("read8(0x%X) too big\n",addr);
+    exit(1);
+}
+
     ra=rom[addr]&0xFF;
     return(ra);
 }
@@ -393,6 +410,13 @@ unsigned int read8 ( unsigned int addr )
 unsigned int read16 ( unsigned int addr )
 {
     unsigned int ra;
+
+if(addr>ROMADDMASK)
+{
+    printf("read16(0x%X) too big\n",addr);
+    exit(1);
+}
+
 
     if(addr&1)
     {
@@ -465,7 +489,7 @@ int get_source ( void )
             {
                 case 0x0:
                 {
-                    sprintf(sstring,"L%04X",sx+pc-2);
+                    sprintf(sstring,"L%04X",(sx+pc-2)&ROMADDMASK);
                     break;
                 }
                 case 0x2:
@@ -663,8 +687,9 @@ int find_hits ( void )
                         fetch(pc,1); //mark hit
                         if((as==1)&&(src==0))
                         {
-                            fetch(sx+pc-2,1);
-                            lablist[sx+pc-2]=1;
+                            joff=(sx+pc-2)&ROMADDMASK;
+                            fetch(joff,1);
+                            lablist[joff]=1;
                         }
                         else if((as==3)&&(src==0))
                         {

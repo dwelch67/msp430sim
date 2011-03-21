@@ -455,7 +455,7 @@ void write8 ( unsigned int addr, unsigned int data )
     }
     else
     {
-        fprintf(stderr,"Error cannot write to rom 0x%04X\n",addr);
+        fprintf(stderr,"Error cannot write to rom 0x%04X pc 0x%X\n",addr,pc);
         exit(1);
     }
 if(SHOWWRITE) printf("write8 [%04X] = %02X\n",addr,data);
@@ -1442,7 +1442,7 @@ int reset ( void )
     memset(ram,0xFF,sizeof(ram));
     memset(reg,0x00,sizeof(reg));
     reg[0]=fetch(0xFFFE);
-    reg[1]=0xF000;
+    reg[1]=ROMSTART;
 
     instructions=0;
     fetches=0;
