@@ -479,7 +479,7 @@ void write16 ( unsigned int addr, unsigned int data )
         }
         case 0x58:
         {
-            printf("%04X\n",data);
+            printf("hexstring: 0x%04X\n",data);
             break;
         }
     }
@@ -931,20 +931,23 @@ void do_vflag ( unsigned int a, unsigned int b, unsigned int c )
 {
     unsigned int ra;
     unsigned int rc;
+    unsigned int rd;
 
     if(bw)
     {
         rc=(a&0x7F)+(b&0x7F)+c; //carry in
-        rc = (rc>>7)+(a>>7)+(b>>7);  //carry out
-        rc = rc +((a>>6)&2)+((b>>6)&2);  //sign extend
-        if(((rc>>1)&1)!=(rc&1)) rc=1; else rc=0;
+        rc>>=7; //carry in in lsbit
+        rd=(rc&1)+((a>>7)&1)+((b>>7)&1); //carry out
+        rd>>=1; //carry out in lsbit
+        rc=(rc^rd)&1;
     }
     else
     {
         rc=(a&0x7FFF)+(b&0x7FFF)+c; //carry in
-        rc = (rc>>15)+(a>>15)+(b>>15);  //carry out
-        rc = rc +((a>>14)&2)+((b>>14)&2);  //sign extend
-        if(((rc>>1)&1)!=(rc&1)) rc=1; else rc=0;
+        rc>>=15; //carry in in lsbit
+        rd=(rc&1)+((a>>15)&1)+((b>>15)&1);
+        rd>>=1; //carry out in lsbit
+        rc=(rc^rd)&1;
     }
     ra=read_register(2);
     if(rc) ra|=VBIT; else ra&=~VBIT;
