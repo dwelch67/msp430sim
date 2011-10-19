@@ -1,0 +1,48 @@
+
+blinker01.elf:     file format elf32-msp430
+
+
+Disassembly of section VECTORS:
+
+0000ffe0 <VECTORS>:
+    ffe0:	26 fc       	interrupt service routine at 0xfc26
+    ffe2:	26 fc       	interrupt service routine at 0xfc26
+    ffe4:	26 fc       	interrupt service routine at 0xfc26
+    ffe6:	26 fc       	interrupt service routine at 0xfc26
+    ffe8:	26 fc       	interrupt service routine at 0xfc26
+    ffea:	26 fc       	interrupt service routine at 0xfc26
+    ffec:	26 fc       	interrupt service routine at 0xfc26
+    ffee:	26 fc       	interrupt service routine at 0xfc26
+    fff0:	26 fc       	interrupt service routine at 0xfc26
+    fff2:	26 fc       	interrupt service routine at 0xfc26
+    fff4:	26 fc       	interrupt service routine at 0xfc26
+    fff6:	26 fc       	interrupt service routine at 0xfc26
+    fff8:	26 fc       	interrupt service routine at 0xfc26
+    fffa:	26 fc       	interrupt service routine at 0xfc26
+    fffc:	26 fc       	interrupt service routine at 0xfc26
+    fffe:	00 fc       	interrupt service routine at 0xfc00
+
+Disassembly of section .text:
+
+0000fc00 <reset>:
+    fc00:	b2 40 80 5a 	mov	#23168,	&0x0120	;#0x5a80
+    fc04:	20 01 
+    fc06:	f2 d0 41 00 	bis.b	#65,	&0x0022	;#0x0041
+    fc0a:	22 00 
+    fc0c:	d2 d3 21 00 	bis.b	#1,	&0x0021	;r3 As==01
+    fc10:	f2 c0 40 00 	bic.b	#64,	&0x0021	;#0x0040
+    fc14:	21 00 
+
+0000fc16 <loop>:
+    fc16:	f2 e0 41 00 	xor.b	#65,	&0x0021	;#0x0041
+    fc1a:	21 00 
+    fc1c:	05 43       	clr	r5		;
+    fc1e:	26 43       	mov	#2,	r6	;r3 As==10
+
+0000fc20 <loop0>:
+    fc20:	15 83       	dec	r5		;
+    fc22:	fe 23       	jnz	$-2      	;abs 0xfc20
+    fc24:	f8 3f       	jmp	$-14     	;abs 0xfc16
+
+0000fc26 <hang>:
+    fc26:	ff 3f       	jmp	$+0      	;abs 0xfc26
