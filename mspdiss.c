@@ -224,30 +224,32 @@ int readelf ( void )
     if(elfheader.e_phentsize!=sizeof(progheader))
     {
         printf("e_phentsize is not %u\n",(unsigned int)sizeof(progheader));
-        return(1);
+        //return(1);
     }
-
-    if
-    (   (elfheader.e_phoff!=0) &&
-        (elfheader.e_phnum!=0) &&
-        (elfheader.e_phentsize!=0)
-    )
+    else
     {
-
-        for(prog=0;prog<elfheader.e_phnum;prog++)
+        if
+        (   (elfheader.e_phoff!=0) &&
+            (elfheader.e_phnum!=0) &&
+            (elfheader.e_phentsize!=0)
+        )
         {
-            fseek(fp,elfheader.e_phoff+(prog*sizeof(progheader)),0);
-            fread(&progheader,1,sizeof(progheader),fp);
-            printf("\n----- program header 0x%03X %u %lu -----\n",prog,prog,ftell(fp));
 
-            printf("p_type   0x%08X (%u)\n",progheader.p_type  ,progheader.p_type  );
-            printf("p_offset 0x%08X (%u)\n",progheader.p_offset,progheader.p_offset);
-            printf("p_vaddr  0x%08X (%u)\n",progheader.p_vaddr ,progheader.p_vaddr );
-            printf("p_paddr  0x%08X (%u)\n",progheader.p_paddr ,progheader.p_paddr );
-            printf("p_filesz 0x%08X (%u)\n",progheader.p_filesz,progheader.p_filesz);
-            printf("p_memsz  0x%08X (%u)\n",progheader.p_memsz ,progheader.p_memsz );
-            printf("p_flags  0x%08X (%u)\n",progheader.p_flags ,progheader.p_flags );
-            printf("p_align  0x%08X (%u)\n",progheader.p_align ,progheader.p_align );
+            for(prog=0;prog<elfheader.e_phnum;prog++)
+            {
+                fseek(fp,elfheader.e_phoff+(prog*sizeof(progheader)),0);
+                fread(&progheader,1,sizeof(progheader),fp);
+                printf("\n----- program header 0x%03X %u %lu -----\n",prog,prog,ftell(fp));
+
+                printf("p_type   0x%08X (%u)\n",progheader.p_type  ,progheader.p_type  );
+                printf("p_offset 0x%08X (%u)\n",progheader.p_offset,progheader.p_offset);
+                printf("p_vaddr  0x%08X (%u)\n",progheader.p_vaddr ,progheader.p_vaddr );
+                printf("p_paddr  0x%08X (%u)\n",progheader.p_paddr ,progheader.p_paddr );
+                printf("p_filesz 0x%08X (%u)\n",progheader.p_filesz,progheader.p_filesz);
+                printf("p_memsz  0x%08X (%u)\n",progheader.p_memsz ,progheader.p_memsz );
+                printf("p_flags  0x%08X (%u)\n",progheader.p_flags ,progheader.p_flags );
+                printf("p_align  0x%08X (%u)\n",progheader.p_align ,progheader.p_align );
+            }
         }
     }
 
@@ -321,7 +323,37 @@ int readelf ( void )
             printf("sh_addralign  0x%08X %u\n",sectionheader.sh_addralign ,sectionheader.sh_addralign );
             printf("sh_entsize    0x%08X %u\n",sectionheader.sh_entsize   ,sectionheader.sh_entsize   );
 
-            if((sectionheader.sh_flags&SHF_ALLOC)&&(sectionheader.sh_flags&SHF_EXECINSTR))
+            if(sectionheader.sh_flags&SHF_ALLOC)
+            {
+                if((sectionheader.sh_flags&SHF_EXECINSTR)||(sectionheader.sh_flags&SHF_WRITE))
+                {
+                    rb=sectionheader.sh_size;
+                    if(sectionheader.sh_addr>sizeof(rom))
+                    {
+                        rc=0;
+                    }
+                    else
+                    {
+                        rc=sizeof(rom)-sectionheader.sh_addr;
+                    }
+                    if(rb>rc) rb=rc;
+                    if(rb)
+                    {
+
+                        fseek(fp,sectionheader.sh_offset,0);
+                        rc=fread(&rom[sectionheader.sh_addr],1,rb,fp);
+                        if(rc!=rb)
+                        {
+                            printf("Error reading data\n");
+                            return(1);
+                        }
+                        rc=sectionheader.sh_addr;
+                        printf("0x%04X 0x%04X %u\n",rc,rb,rb);
+                        //for(ra=0;ra<rb;ra++) printf("0x%04X : 0x%02X\n",rc+ra,rom[rc+ra]);
+                    }
+                }
+            }
+            if((sectionheader.sh_flags&SHF_ALLOC)&&(sectionheader.sh_flags&SHF_WRITE))
             {
                 rb=sectionheader.sh_size;
                 if(sectionheader.sh_addr>sizeof(rom))
@@ -345,6 +377,7 @@ int readelf ( void )
                     }
                     rc=sectionheader.sh_addr;
                     printf("0x%04X 0x%04X %u\n",rc,rb,rb);
+                    //for(ra=0;ra<rb;ra++) printf("0x%04X : 0x%02X\n",rc+ra,rom[rc+ra]);
                 }
             }
         }
